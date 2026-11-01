@@ -11,6 +11,9 @@ GitHub's app connection can push code but can't create repos or flip the Pages s
 2. **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `(root)` → Save**
 3. Live at **https://paperworkmg-arch.github.io/lobhjb/** within a minute or two
 
+## Watch real movies on the site
+The **Watch Now** player at the top streams full-length public-domain classics legally from the Internet Archive: Night of the Living Dead (1968), His Girl Friday (1940), House on Haunted Hill (1959), Carnival of Souls (1962), The Little Shop of Horrors (1960), Nosferatu (1922), and Dressed to Kill (1946). Each stream was verified live before listing. The 440-title catalog below it is discovery only — newer films are under copyright, so those cards link out to IMDb/trailer instead of streaming pirated copies.
+
 ## How it works
 - No API key, no backend, no build step — plain HTML/CSS/JS.
 - On load it fetches the catalog live from [Sample APIs](https://sampleapis.com/api/movies) (7 genre lists, 440 unique movies after de-duplication by IMDb ID), and merges genres for films that appear in more than one list.

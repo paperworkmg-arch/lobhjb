@@ -1,3 +1,26 @@
+const WATCH = [
+  {title:"Night of the Living Dead (1968) — Horror", id:"notld_201610"},
+  {title:"His Girl Friday (1940) — Comedy", id:"his_girl_friday"},
+  {title:"House on Haunted Hill (1959) — Horror", id:"house_on_haunted_hill"},
+  {title:"Carnival of Souls (1962) — Horror", id:"CarnivalOfSouls_823"},
+  {title:"The Little Shop of Horrors (1960) — Horror/Comedy", id:"The_Little_Shop_of_Horrors_60"},
+  {title:"Nosferatu (1922) — Horror Classic", id:"fw-murnaus-nosferatu-1922"},
+  {title:"Dressed to Kill (1946) — Sherlock Holmes Mystery", id:"dressed_to_kill"},
+];
+const watchList = document.querySelector("#watch-list");
+WATCH.forEach((w,i)=>{
+  const b=document.createElement("button");
+  b.textContent = "▶ " + w.title;
+  if(i===0) b.className="active";
+  b.onclick = ()=>{
+    document.querySelector("#player").src = "https://archive.org/embed/" + w.id;
+    watchList.querySelectorAll("button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelector("#watch").scrollIntoView({behavior:"smooth"});
+  };
+  watchList.appendChild(b);
+});
+
 const CATEGORIES = ["animation","comedy","drama","family","horror","mystery","western"];
 const PAGE = 60;
 let all = [], activeGenre = "all", shown = PAGE;
@@ -38,8 +61,10 @@ function render(){
   list.slice(0, shown).forEach(m=>{
     const card=document.createElement("article");
     card.className="card";
-    card.innerHTML = `<img loading="lazy" src="${m.posterURL}" alt="${m.title.replace(/"/g,"&quot;")} poster" onerror="this.src='https://placehold.co/300x450/23232e/f4f4f6?text='+encodeURIComponent('${"Movie"}')">
+    card.innerHTML = `<img loading="lazy" src="${m.posterURL}" alt="${m.title.replace(/"/g,"&quot;")} poster">
       <div class="body"><h3></h3><p>${m.genres.join(" · ")}</p></div>`;
+    const img = card.querySelector("img");
+    img.onerror = ()=>{ img.onerror=null; img.src = "https://placehold.co/300x450/23232e/f4f4f6?text=" + encodeURIComponent(m.title); };
     card.querySelector("h3").textContent = m.title;
     card.onclick = ()=> openModal(m);
     grid.appendChild(card);

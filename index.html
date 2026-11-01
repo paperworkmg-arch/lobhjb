@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All Movies — Browse Every Movie</title>
+<meta name="description" content="A free movie catalog: browse, search and filter hundreds of movies across Animation, Comedy, Drama, Family, Horror, Mystery and Western.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🎬 ALL <span>MOVIES</span></h1>
+    <p class="tag">Browse every movie in the catalog — search it, filter it, pick one for tonight.</p>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Search movies… e.g. Coco, Psycho, Toy Story" autocomplete="off">
+      <select id="sort">
+        <option value="az">Sort: A – Z</option>
+        <option value="za">Sort: Z – A</option>
+      </select>
+    </div>
+    <nav id="genres" class="genres" aria-label="Genres"></nav>
+    <p id="status" class="status">Loading the catalog…</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" hidden>
+    <p>No movies match that search.</p>
+    <button id="clear">Clear search & filters</button>
+  </div>
+  <div class="more-row"><button id="more" hidden>Show more</button></div>
+</main>
+
+<footer class="wrap">
+  <p>Catalog data: Sample APIs (free, no key). Posters: Amazon Media. Every card links to its IMDb page and a YouTube trailer search — this is a discovery catalog, it does not host or stream films.</p>
+  <p>Built for Mykel T. Brooks / Paperwork Music Group · <a href="https://github.com/paperworkmg-arch/all-movies">Source on GitHub</a></p>
+</footer>
+
+<dialog id="modal">
+  <button id="close" aria-label="Close">✕</button>
+  <img id="m-poster" alt="">
+  <h2 id="m-title"></h2>
+  <p id="m-genres" class="m-genres"></p>
+  <div class="m-actions">
+    <a id="m-imdb" target="_blank" rel="noopener">View on IMDb ↗</a>
+    <a id="m-trailer" target="_blank" rel="noopener">Watch trailer on YouTube ↗</a>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

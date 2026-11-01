@@ -2,11 +2,18 @@
 
 A free movie catalog site — browse, search and filter movies across Animation, Comedy, Drama, Family, Horror, Mystery and Western.
 
-**Live site:** https://paperworkmg-arch.github.io/all-movies/
+**Repo:** https://github.com/paperworkmg-arch/lobhjb — this was an empty "website" repo, now home to the All Movies site.
+
+## Turn on the live site (GitHub Pages, ~30 seconds)
+GitHub's app connection can push code but can't create repos or flip the Pages switch, and web sign-in is blocked at GitHub's 2FA SMS step — so this one switch is manual, in the GitHub app/site where you're already signed in:
+
+1. Open the repo → **Settings → General → Danger Zone → Change visibility → Make public** (Pages is free on public repos)
+2. **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `(root)` → Save**
+3. Live at **https://paperworkmg-arch.github.io/lobhjb/** within a minute or two
 
 ## How it works
 - No API key, no backend, no build step — plain HTML/CSS/JS.
-- On load it fetches the catalog live from [Sample APIs](https://sampleapis.com/api/movies) (7 genre lists), de-duplicates by IMDb ID, and merges genres for films that appear in more than one list.
+- On load it fetches the catalog live from [Sample APIs](https://sampleapis.com/api/movies) (7 genre lists, 440 unique movies after de-duplication by IMDb ID), and merges genres for films that appear in more than one list.
 - Every card opens a detail view with links to the film's IMDb page and a YouTube trailer search.
 - This is a discovery catalog only — it does not host or stream films.
 

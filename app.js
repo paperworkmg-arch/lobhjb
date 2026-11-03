@@ -53,36 +53,53 @@ const WATCH = [
   {title:"Cosmos: War of the Planets (1977) — Sci-Fi", id:"Cosmos_War_of_the_Planets"},
 ];
 const watchList = document.querySelector("#watch-list");
+function playIA(id){
+  document.querySelector("#player").src = "https://archive.org/embed/" + id;
+  document.querySelector("#watch").scrollIntoView({behavior:"smooth"});
+}
 WATCH.forEach((w,i)=>{
   const b=document.createElement("button");
   b.textContent = "▶ " + w.title;
   if(i===0) b.className="active";
   b.onclick = ()=>{
-    document.querySelector("#player").src = "https://archive.org/embed/" + w.id;
+    playIA(w.id);
     watchList.querySelectorAll("button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");
-    document.querySelector("#watch").scrollIntoView({behavior:"smooth"});
   };
   watchList.appendChild(b);
 });
 
 const CATEGORIES = ["animation","comedy","drama","family","horror","mystery","western"];
+const BLOCK = ["sex","nude","nudist","porn","erotic","teaserama","burlesque","adult","molest","child bride"];
+const IA_PAGES = 12;
 const PAGE = 60;
-let all = [], activeGenre = "all", shown = PAGE;
+let all = [], activeGenre = "all", activeSource = "all", shown = PAGE, loading = true;
 
 const $ = s => document.querySelector(s);
 const grid = $("#grid"), statusEl = $("#status"), genresEl = $("#genres");
+const norm = t => t.toLowerCase().split("(")[0].replace(/[^a-z0-9]/g,"");
 
 function renderGenres(){
+  const sampleCount = all.filter(m=>m.source==="sample").length;
+  const iaCount = all.filter(m=>m.source==="ia").length;
   const counts = {};
-  all.forEach(m => m.genres.forEach(g => counts[g]=(counts[g]||0)+1));
-  const btns = [["all", all.length], ...CATEGORIES.filter(c=>counts[c]).map(c=>[c,counts[c]])];
+  all.forEach(m => (m.genres||[]).forEach(g => counts[g]=(counts[g]||0)+1));
+  const btns = [
+    ["all", `All Movies (${all.length})`, activeGenre==="all" && activeSource==="all"],
+    ["__ia", `▶ Watchable Now (${iaCount})`, activeSource==="ia"],
+    ...CATEGORIES.filter(c=>counts[c]).map(c=>[c, `${c} (${counts[c]})`, activeGenre===c])
+  ];
   genresEl.innerHTML = "";
-  btns.forEach(([g,n])=>{
+  btns.forEach(([g,label,on])=>{
     const b=document.createElement("button");
-    b.textContent = `${g === "all" ? "All Movies" : g} (${n})`;
-    b.className = g===activeGenre ? "active" : "";
-    b.onclick = ()=>{ activeGenre=g; shown=PAGE; renderGenres(); render(); };
+    b.textContent = label;
+    if(on) b.className="active";
+    b.onclick = ()=>{
+      if(g==="all"){ activeGenre="all"; activeSource="all"; }
+      else if(g==="__ia"){ activeGenre="all"; activeSource="ia"; }
+      else { activeGenre=g; activeSource="sample"; }
+      shown=PAGE; renderGenres(); render();
+    };
     genresEl.appendChild(b);
   });
 }
@@ -90,28 +107,36 @@ function renderGenres(){
 function filtered(){
   const q = $("#q").value.trim().toLowerCase();
   let list = all.filter(m =>
-    (activeGenre==="all" || m.genres.includes(activeGenre)) &&
+    (activeSource==="all" || m.source===activeSource) &&
+    (activeGenre==="all" || (m.genres||[]).includes(activeGenre)) &&
     (!q || m.title.toLowerCase().includes(q))
   );
-  list.sort((a,b)=> $("#sort").value==="za" ? b.title.localeCompare(a.title) : a.title.localeCompare(b.title));
+  if($("#sort").value==="za") list.sort((a,b)=>b.title.localeCompare(a.title));
+  else if($("#sort").value==="az") list.sort((a,b)=>a.title.localeCompare(b.title));
   return list;
 }
 
 function render(){
   const list = filtered();
-  statusEl.textContent = `${list.length} movie${list.length===1?"":"s"} ${activeGenre==="all"?"in the catalog":"in "+activeGenre}${$("#q").value.trim()?` matching “${$("#q").value.trim()}”`:""}`;
+  const watchable = all.filter(m=>m.source==="ia").length;
+  statusEl.textContent = `${list.length} movies shown · ${all.length} total in the library · ${watchable} playable right here${loading ? " · still loading more…" : ""}`;
   $("#empty").hidden = list.length>0;
   $("#more").hidden = shown >= list.length;
   grid.innerHTML = "";
   list.slice(0, shown).forEach(m=>{
     const card=document.createElement("article");
     card.className="card";
-    card.innerHTML = `<img loading="lazy" src="${m.posterURL}" alt="${m.title.replace(/"/g,"&quot;")} poster">
-      <div class="body"><h3></h3><p>${m.genres.join(" · ")}</p></div>`;
+    const badge = m.source==="ia" ? '<span class="badge">▶ WATCH</span>' : '';
+    const sub = m.source==="ia" ? (m.year ? "Feature film · " + m.year : "Feature film") : (m.genres||[]).join(" · ");
+    card.innerHTML = `${badge}<img loading="lazy" alt="">
+      <div class="body"><h3></h3><p></p></div>`;
     const img = card.querySelector("img");
+    img.src = m.posterURL;
+    img.alt = m.title + " poster";
     img.onerror = ()=>{ img.onerror=null; img.src = "https://placehold.co/300x450/23232e/f4f4f6?text=" + encodeURIComponent(m.title); };
     card.querySelector("h3").textContent = m.title;
-    card.onclick = ()=> openModal(m);
+    card.querySelector("p").textContent = sub;
+    card.onclick = ()=>{ if(m.source==="ia") playIA(m.iaId); else openModal(m); };
     grid.appendChild(card);
   });
 }
@@ -120,7 +145,7 @@ function openModal(m){
   $("#m-poster").src = m.posterURL;
   $("#m-poster").alt = m.title + " poster";
   $("#m-title").textContent = m.title;
-  $("#m-genres").textContent = m.genres.join(" · ");
+  $("#m-genres").textContent = (m.genres||[]).join(" · ");
   $("#m-imdb").href = "https://www.imdb.com/title/" + m.imdbId + "/";
   $("#m-trailer").href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(m.title + " official trailer");
   $("#modal").showModal();
@@ -128,11 +153,35 @@ function openModal(m){
 $("#close").onclick = ()=> $("#modal").close();
 $("#modal").addEventListener("click", e=>{ if(e.target.id==="modal") $("#modal").close(); });
 $("#more").onclick = ()=>{ shown += PAGE; render(); };
-$("#clear").onclick = ()=>{ $("#q").value=""; activeGenre="all"; shown=PAGE; renderGenres(); render(); };
+$("#clear").onclick = ()=>{ $("#q").value=""; activeGenre="all"; activeSource="all"; shown=PAGE; renderGenres(); render(); };
 $("#q").addEventListener("input", ()=>{ shown=PAGE; render(); });
 $("#sort").addEventListener("change", render);
 
-async function load(){
+async function loadIA(){
+  const seen = new Set(all.filter(m=>m.source==="ia").map(m=>m.iaId));
+  for(let page=1; page<=IA_PAGES; page++){
+    try{
+      const url = "https://archive.org/advancedsearch.php?q=" + encodeURIComponent("collection:feature_films AND mediatype:movies")
+        + "&fl[]=identifier&fl[]=title&fl[]=year&sort[]=downloads+desc&rows=100&page=" + page + "&output=json";
+      const r = await fetch(url);
+      if(!r.ok) continue;
+      const data = await r.json();
+      (data.response.docs||[]).forEach(x=>{
+        let t = Array.isArray(x.title) ? x.title[0] : x.title;
+        t = (t||"").trim();
+        if(!t || !x.identifier || seen.has(x.identifier)) return;
+        const low = t.toLowerCase();
+        if(BLOCK.some(b=>low.includes(b))) return;
+        seen.add(x.identifier);
+        all.push({ title:t, year:x.year||"", source:"ia", iaId:x.identifier,
+          posterURL:"https://archive.org/services/img/" + x.identifier, genres:[] });
+      });
+      renderGenres(); render();
+    }catch(e){ /* keep loading the next page */ }
+  }
+}
+
+async function loadSample(){
   try{
     const results = await Promise.all(CATEGORIES.map(async c=>{
       const r = await fetch("https://api.sampleapis.com/movies/" + c);
@@ -140,18 +189,21 @@ async function load(){
       const data = await r.json();
       return Array.isArray(data) ? data.map(m=>({...m, _genre:c})) : [];
     }));
+    const iaTitles = new Set(all.filter(m=>m.source==="ia").map(m=>norm(m.title)));
     const byId = new Map();
     results.flat().forEach(m=>{
       if(!m.imdbId || !m.title) return;
       if(byId.has(m.imdbId)){ const ex=byId.get(m.imdbId); if(!ex.genres.includes(m._genre)) ex.genres.push(m._genre); }
-      else byId.set(m.imdbId, { title:m.title, posterURL:m.posterURL, imdbId:m.imdbId, genres:[m._genre] });
+      else byId.set(m.imdbId, { title:m.title, posterURL:m.posterURL, imdbId:m.imdbId, genres:[m._genre], source:"sample" });
     });
-    all = [...byId.values()];
-    if(!all.length) throw new Error("empty catalog");
-    statusEl.textContent = "";
-    renderGenres(); render();
-  }catch(e){
-    statusEl.textContent = "Could not load the live catalog — check your connection and refresh. (No movies are hosted here; the list comes from a free public catalog.)";
-  }
+    byId.forEach(m=>{ if(!iaTitles.has(norm(m.title))) all.push(m); });
+  }catch(e){ /* Archive catalog already covers the library */ }
 }
-load();
+
+(async function load(){
+  statusEl.textContent = "Loading 1,000+ movies…";
+  await loadIA();
+  await loadSample();
+  loading = false;
+  renderGenres(); render();
+})();

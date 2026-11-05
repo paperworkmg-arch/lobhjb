@@ -71,7 +71,7 @@ WATCH.forEach((w,i)=>{
 
 const CATEGORIES = ["animation","comedy","drama","family","horror","mystery","western"];
 const BLOCK = ["sex","nude","nudist","porn","erotic","teaserama","burlesque","adult","molest","child bride"];
-const IA_PAGES = 12;
+const IA_PAGES = 30;
 const PAGE = 60;
 let all = [], activeGenre = "all", activeSource = "all", shown = PAGE, loading = true;
 

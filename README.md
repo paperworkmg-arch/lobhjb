@@ -1,6 +1,6 @@
 # All Movies
 
-A free movie library with **1,600+ movies** — the 1,000+ most-watched feature films from the Internet Archive (most playable right on the page), plus a curated 440-title catalog across Animation, Comedy, Drama, Family, Horror, Mystery and Western.
+A free movie library with **3,300+ movies** — the 3,000 most-watched feature films from the Internet Archive (most playable right on the page), plus a curated 440-title catalog across Animation, Comedy, Drama, Family, Horror, Mystery and Western.
 
 **Repo:** https://github.com/paperworkmg-arch/lobhjb — this was an empty "website" repo, now home to the All Movies site.
 
@@ -16,7 +16,7 @@ The **Watch Now** player at the top streams 52 full-length public-domain classic
 
 ## How it works
 - No API key, no backend, no build step — plain HTML/CSS/JS.
-- On load it fetches live from two free, no-key sources with CORS open: (1) the Internet Archive `feature_films` collection (28,536 films exist there) — the 12 most-downloaded pages, ~1,185 films after a family-safe title filter, each playable in the on-page player with posters from Archive's thumbnail service; (2) [Sample APIs](https://sampleapis.com/api/movies) (7 genre lists, 440 unique movies after de-duplication by IMDb ID), minus titles already in the Archive list. Combined library verified at build time: **1,612 unique movies**.
+- On load it fetches live from two free, no-key sources with CORS open: (1) the Internet Archive `feature_films` collection (28,536 films exist there) — the 30 most-downloaded pages, ~2,971 films after a family-safe title filter, each playable in the on-page player with posters from Archive's thumbnail service; (2) [Sample APIs](https://sampleapis.com/api/movies) (7 genre lists, 440 unique movies after de-duplication by IMDb ID), minus titles already in the Archive list. Combined library verified at build time: **3,380 unique movies** (Nov 5, 2026).
 - Every card opens a detail view with links to the film's IMDb page and a YouTube trailer search.
 - This is a discovery catalog only — it does not host or stream films.
 
